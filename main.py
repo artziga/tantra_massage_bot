@@ -1,26 +1,24 @@
 import asyncio
-import os
-from aiogram import Bot, Dispatcher, types
 
-from dotenv import load_dotenv, find_dotenv
+from aiogram import Dispatcher
 
-dotenv_path = find_dotenv()
-load_dotenv(dotenv_path)
-
-TOKEN = os.getenv('TOKEN')
-
-bot = Bot(token=TOKEN)
+from botlogic.routers import router
+from botlogic.routers.fun_fandlers import echo
+from botlogic.settings import bot
 
 dp = Dispatcher()
 
-
-@dp.message()
-async def start(message: types.Message):
-    await message.reply(message.text)
+dp.include_router(router)
 
 
 async def main() -> None:
-    await dp.start_polling(bot)
+
+    # dp.message.register(echo)
+    try:
+        await dp.start_polling(bot)
+    finally:
+        await bot.session.close()
 
 
-asyncio.run(main())
+if __name__ == '__main__':
+    asyncio.run(main())
